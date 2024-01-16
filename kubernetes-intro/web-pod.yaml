@@ -1,0 +1,23 @@
+apiVersion: v1                                                          # Версия API
+kind: Pod                                                               # Объект, который создаем
+metadata:
+  name: k8s-web                                                         # Название Pod
+  labels:                                                               # Метки в формате key: value
+    app: k8s-web
+spec:                                                                   # Описание Pod
+  initContainers:
+  - name: generate-index-html
+    image: busybox:1.31.0
+    command: ['sh', '-c', 'wget -O- https://tinyurl.com/otus-k8s-intro | sh']
+    volumeMounts:
+    - name: app
+      mountPath: /app
+  containers:                                                           # Описание контейнеров внутри Pod
+  - name: k8s-web-server                                                # Название контейнера
+    image: kirillshakh/k8s_course:k8s_web                               # Образ из которого создается контейнер
+    volumeMounts:
+    - name: app
+      mountPath: /app
+  volumes:
+  - name: app
+    emptyDir: {}
