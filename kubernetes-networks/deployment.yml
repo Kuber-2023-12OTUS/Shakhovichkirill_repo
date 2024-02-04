@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-web
+  namespace: homework
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: k8s-web
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      name: k8s-web
+      labels:
+        app: k8s-web
+    spec:
+      initContainers:
+      - name: generate-index-html
+        image: busybox:1.31.0
+        command: ['sh', '-c', 'wget -O- https://tinyurl.com/otus-k8s-intro | sh']
+        volumeMounts:
+        - name: app
+          mountPath: /app
+      containers:
+      - name: k8s-web
+        image: kirillshakh/k8s_course:v0.0.2
+        readinessProbe:
+          httpGet:
+            port: 8000
+            path: /index.html
+        volumeMounts:
+        - name: app
+          mountPath: /app
+      volumes:
+      - name: app
+        emptyDir: {}
