@@ -1,0 +1,53 @@
+deployment:
+  name: k8s-web
+  namespace: homework
+  strategy:
+    type: RollingUpdate
+    maxUnavailable: 1
+  pod_lables: k8s-web
+
+specont:
+  initcontainers:
+    name: generate-index-html
+    images:
+      repo: busybox
+      tag: 1.31.0
+    comand: "['sh', '-c', 'wget -O- https://tinyurl.com/otus-k8s-intro | sh']"
+    mountPath:
+      name: app
+      mount: /app
+  containers:
+    repo: kirillshakh
+    image: k8s_course
+    tag: v0.0.2
+    port: 8000
+    path: /index.html
+    mountPath:
+      name: app
+      mount: /app
+    configMap:
+      name: configmap-volume
+      mount: /app/conf
+  volumes:
+    name: app
+    persistentVolumeClaim:
+      claimName: k8s-web-pvc
+    configMap:
+      name: k8s-web-cm
+
+service:
+  name: k8s-web-svc
+  selector_app: k8s-web
+  type: ClusterIP
+  ports:
+    name: http
+    protocol: TCP
+    port: 80
+  replicas: 3
+
+specPvc:
+  accessModes: ReadWriteOnce
+  storage: 1Gi
+
+ingress:
+  host: homework.otus

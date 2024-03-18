@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.specont.volumes.persistentVolumeClaim.claimName }}
+  namespace: {{ .Values.deployment.namespace}}
+  labels:
+    app: {{ .Values.deployment.pod_lables }}
+spec:
+  accessModes:
+    - {{ .Values.specPvc.accessModes }}
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: {{ .Values.specPvc.storage }}
+  storageClassName: "{{ .Values.deployment.pod_lables }}-pvc-sc"

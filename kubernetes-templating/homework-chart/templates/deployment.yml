@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment.name }}
+  namespace: {{ .Values.deployment.namespace}}
+spec:
+  replicas: {{ .Values.service.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.deployment.pod_lables }}
+  strategy:
+    type: {{ .Values.deployment.strategy.type }}
+    rollingUpdate:
+      maxUnavailable: {{ .Values.deployment.strategy.maxUnavailable }}
+  template:
+    metadata:
+      name: {{ .Values.deployment.pod_lables }}
+      labels:
+        app: {{ .Values.deployment.pod_lables }}
+    spec:
+      initContainers:
+      - name: {{ .Values.specont.initcontainers.name | default "generate-index-html" }}
+        image: {{ .Values.specont.initcontainers.images.repo }}:{{ .Values.specont.initcontainers.images.tag }}
+        command: {{ .Values.specont.initcontainers.comand }}
+        volumeMounts:
+        - name: {{ .Values.specont.initcontainers.mountPath.name }}
+          mountPath: {{ .Values.specont.initcontainers.mountPath.mount }}
+      containers:
+      - name: {{ .Values.deployment.pod_lables }}
+        image: {{ .Values.specont.containers.repo }}/{{ .Values.specont.containers.image }}:{{ .Values.specont.containers.tag }}
+        {{- if .Values.specont.containers.readinessProbe }}
+        readinessProbe:
+          httpGet:
+            port: {{ .Values.specont.containers.port }}
+            path: {{ .Values.specont.containers.path }}
+        {{- end }}
+        volumeMounts:
+        - name: {{ .Values.specont.containers.mountPath.name }}
+          mountPath: {{ .Values.specont.containers.mountPath.mount }}
+        - name: {{ .Values.specont.containers.configMap.name }}
+          mountPath: {{ .Values.specont.containers.configMap.mount }}
+      volumes:
+      - name: {{ .Values.specont.volumes.name }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.specont.volumes.persistentVolumeClaim.claimName }}
+      - name: {{ .Values.specont.containers.configMap.name }}
+        configMap:
+          name: {{ .Values.specont.volumes.configMap.name }}
