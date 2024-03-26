@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      name: nginx
+      labels:
+        app: nginx
+    spec:
+      initContainers:
+      - name: generate-index-html
+        image: busybox:1.31.0
+        command: ['sh', '-c', 'wget -O- https://tinyurl.com/otus-k8s-intro | sh']
+        volumeMounts:
+        - name: app
+          mountPath: /app
+      containers:
+      - name: nginx
+        image: kirillshakh/custom_nginx:v0.0.1
+        readinessProbe:
+          httpGet:
+            port: 8000
+            path: /index.html
+        volumeMounts:
+        - name: app
+          mountPath: /app
+      - name: exporter
+        image: nginx/nginx-prometheus-exporter:1.1.0
+        args: ['-nginx.scrape-uri', 'http://127.0.0.1:8000/metrics']
+      volumes:
+      - name: app
+        emptyDir: {}
