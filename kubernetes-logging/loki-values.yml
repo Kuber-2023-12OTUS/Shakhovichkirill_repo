@@ -1,0 +1,47 @@
+loki:
+  storage:
+    bucketNames:
+      chunks: logs03
+      ruler: logs03
+      admin: s3user
+    type: 's3'
+    s3:
+      endpoint: storage.yandexcloud.net
+      secretAccessKey: YCPkM_Ef8BDq8hbChATLbQyLtnLZ5l8J3crRzYHp
+      accessKeyId: YCAJEh3WlsufligXX34uCjFpl
+  auth_enabled: false
+  commonConfig:
+    replication_factor: 1
+
+test:
+  enabled: false
+
+monitoring:
+  selfMonitoring:
+    enabled: false
+    grafanaAgent:
+      installOperator: false
+  lokiCanary:
+    nodeSelector:
+      infra: "true"
+    tolerations:
+    - key: "node-role"
+      value: "infra"
+      effect: "NoSchedule"
+
+singleBinary:
+  replicas: 1
+  nodeSelector:
+    infra: "true"
+  tolerations:
+  - key: "node-role"
+    value: "infra"
+    effect: "NoSchedule"
+
+gateway:
+  nodeSelector:
+    infra: "true"
+  tolerations:
+  - key: "node-role"
+    value: "infra"
+    effect: "NoSchedule"

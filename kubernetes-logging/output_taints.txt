@@ -1,0 +1,10 @@
+kirill@k8s-1:~/kubernetes-logging$ kubectl get node -o wide --show-labels
+NAME                        STATUS   ROLES    AGE     VERSION   INTERNAL-IP   EXTERNAL-IP       OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME     LABELS
+cl11vcdp230arsjap3ib-umot   Ready    <none>   3d21h   v1.28.2   10.131.0.23   158.160.155.115   Ubuntu 20.04.6 LTS   5.4.0-167-generic   containerd://1.6.22   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/instance-type=standard-v3,beta.kubernetes.io/os=linux,failure-domain.beta.kubernetes.io/zone=ru-central1-d,infra=true,kubernetes.io/arch=amd64,kubernetes.io/hostname=cl11vcdp230arsjap3ib-umot,kubernetes.io/os=linux,node.kubernetes.io/instance-type=standard-v3,node.kubernetes.io/kube-proxy-ds-ready=true,node.kubernetes.io/masq-agent-ds-ready=true,node.kubernetes.io/node-problem-detector-ds-ready=true,topology.kubernetes.io/zone=ru-central1-d,yandex.cloud/node-group-id=cat0v809i1gobqp73hs0,yandex.cloud/pci-topology=k8s,yandex.cloud/preemptible=false
+cl19tmugft0n0eq5ajhq-egam   Ready    <none>   3d21h   v1.28.2   10.131.0.11   158.160.144.166   Ubuntu 20.04.6 LTS   5.4.0-167-generic   containerd://1.6.22   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/instance-type=standard-v3,beta.kubernetes.io/os=linux,failure-domain.beta.kubernetes.io/zone=ru-central1-d,kubernetes.io/arch=amd64,kubernetes.io/hostname=cl19tmugft0n0eq5ajhq-egam,kubernetes.io/os=linux,node.kubernetes.io/instance-type=standard-v3,node.kubernetes.io/kube-proxy-ds-ready=true,node.kubernetes.io/masq-agent-ds-ready=true,node.kubernetes.io/node-problem-detector-ds-ready=true,topology.kubernetes.io/zone=ru-central1-d,workload=true,yandex.cloud/node-group-id=cat5jpsh1aeb3q7eq5n3,yandex.cloud/pci-topology=k8s,yandex.cloud/preemptible=false
+
+
+kirill@k8s-1:~/kubernetes-logging$ kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
+NAME                        TAINTS
+cl11vcdp230arsjap3ib-umot   [map[effect:NoSchedule key:node-role value:infra]]
+cl19tmugft0n0eq5ajhq-egam   <none>
