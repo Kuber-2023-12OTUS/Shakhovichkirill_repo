@@ -2,5 +2,5 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: {{ .Values.deployment.pod_lables }}-pvc-sc
-provisioner: disk-csi-driver.mks.ycloud.i
+provisioner: disk-csi-driver.mks.ycloud.io
 reclaimPolicy: Retain
