@@ -12,4 +12,4 @@ spec:
   resources:
     requests:
       storage: {{ .Values.specPvc.storage }}
-  storageClassName: "{{ .Values.deployment.pod_lables }}-pvc-sc"
+  storageClassName: "{{ .Values.persistence.storageClassName }}"
