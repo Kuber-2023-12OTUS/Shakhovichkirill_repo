@@ -1,6 +1,6 @@
 deployment:
   name: k8s-web
-  namespace: homework
+  namespace: homeworkhelm
   strategy:
     type: RollingUpdate
     maxUnavailable: 1
