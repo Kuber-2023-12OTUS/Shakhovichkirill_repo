@@ -50,7 +50,7 @@ specPvc:
   storage: 1Gi
 
 persistence:
-  storageClassName: "yc-network-hdd"
+  storageClass: "yc-network-hdd"
 
 ingress:
   host: homework.otus
