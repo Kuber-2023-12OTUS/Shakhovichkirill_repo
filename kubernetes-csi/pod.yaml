@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: csi-k8s-nginx
+  namespace: default
+spec:
+  containers:
+   - name: csi-k8s-nginx
+     image: nginx
+     volumeMounts:
+       - mountPath: /data
+         name: csi-k8s-11
+  volumes:
+   - name: csi-k8s-11
+     persistentVolumeClaim:
+       claimName: csi-s3-pvc
+       readOnly: false
