@@ -1,0 +1,13 @@
+tcpdump: verbose output suppressed, use -v[v]... for full protocol decode
+listening on any, link-type LINUX_SLL2 (Linux cooked v2), snapshot length 262144 bytes
+19:42:36.309868 lo    In  ifindex 1 00:00:00:00:00:00 ethertype IPv4 (0x0800), length 80: 127.0.0.1.60918 > 127.0.0.1.80: Flags [S], seq 2086611236, win 65495, options [mss 65495,sackOK,TS val 36733118 ecr 0,nop,wscale 7], length 0
+19:42:36.309880 lo    In  ifindex 1 00:00:00:00:00:00 ethertype IPv4 (0x0800), length 80: 127.0.0.1.80 > 127.0.0.1.60918: Flags [S.], seq 3934930931, ack 2086611237, win 65483, options [mss 65495,sackOK,TS val 36733118 ecr 36733118,nop,wscale 7], length 0
+19:42:36.309888 lo    In  ifindex 1 00:00:00:00:00:00 ethertype IPv4 (0x0800), length 72: 127.0.0.1.60918 > 127.0.0.1.80: Flags [.], ack 1, win 512, options [nop,nop,TS val 36733118 ecr 36733118], length 0
+19:42:47.628811 lo    In  ifindex 1 00:00:00:00:00:00 ethertype IPv4 (0x0800), length 77: 127.0.0.1.60918 > 127.0.0.1.80: Flags [P.], seq 1:6, ack 1, win 512, options [nop,nop,TS val 36744437 ecr 36733118], length 5: HTTP
+19:42:47.628838 lo    In  ifindex 1 00:00:00:00:00:00 ethertype IPv4 (0x0800), length 72: 127.0.0.1.80 > 127.0.0.1.60918: Flags [.], ack 6, win 512, options [nop,nop,TS val 36744437 ecr 36744437], length 0
+19:42:47.628994 lo    In  ifindex 1 00:00:00:00:00:00 ethertype IPv4 (0x0800), length 381: 127.0.0.1.80 > 127.0.0.1.60918: Flags [P.], seq 1:310, ack 6, win 512, options [nop,nop,TS val 36744437 ecr 36744437], length 309: HTTP: HTTP/1.1 400 Bad Request
+19:42:47.628999 lo    In  ifindex 1 00:00:00:00:00:00 ethertype IPv4 (0x0800), length 72: 127.0.0.1.60918 > 127.0.0.1.80: Flags [.], ack 310, win 510, options [nop,nop,TS val 36744437 ecr 36744437], length 0
+19:42:47.629017 lo    In  ifindex 1 00:00:00:00:00:00 ethertype IPv4 (0x0800), length 72: 127.0.0.1.80 > 127.0.0.1.60918: Flags [F.], seq 310, ack 6, win 512, options [nop,nop,TS val 36744437 ecr 36744437], length 0
+19:42:47.672654 lo    In  ifindex 1 00:00:00:00:00:00 ethertype IPv4 (0x0800), length 72: 127.0.0.1.60918 > 127.0.0.1.80: Flags [.], ack 311, win 512, options [nop,nop,TS val 36744481 ecr 36744437], length 0
+19:42:48.129823 lo    In  ifindex 1 00:00:00:00:00:00 ethertype IPv4 (0x0800), length 72: 127.0.0.1.60918 > 127.0.0.1.80: Flags [F.], seq 6, ack 311, win 512, options [nop,nop,TS val 36744938 ecr 36744437], length 0
+19:42:48.129841 lo    In  ifindex 1 00:00:00:00:00:00 ethertype IPv4 (0x0800), length 72: 127.0.0.1.80 > 127.0.0.1.60918: Flags [.], ack 7, win 512, options [nop,nop,TS val 36744938 ecr 36744938], length 0

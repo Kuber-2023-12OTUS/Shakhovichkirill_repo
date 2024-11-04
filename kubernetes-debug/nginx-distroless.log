@@ -1,0 +1,5 @@
+root@minikube:/host# cat var/lib/docker/containers/53526ecb81e5e1bdb7b91e70060743b6929809f280eb9b286ddd2bcaeb2b7b3f/53526ecb81e5e1bdb7b91e70060743b6929809f280eb9b286ddd2bcaeb2b7b3f-json.log
+{"log":"127.0.0.1 - - [02/Nov/2024:03:42:48 +0800] \"\\xFF\\xF4\\xFF\\xFD\\x06\" 400 157 \"-\" \"-\" \"-\"\n","stream":"stdout","time":"2024-11-01T19:42:48.131071637Z"}
+{"log":"127.0.0.1 - - [02/Nov/2024:03:54:14 +0800] \"GET / HTTP/1.1\" 200 612 \"-\" \"curl/7.81.0\" \"-\"\n","stream":"stdout","time":"2024-11-01T19:54:14.283027622Z"}
+{"log":"127.0.0.1 - - [02/Nov/2024:04:30:52 +0800] \"GET /aasasas HTTP/1.1\" 404 153 \"-\" \"curl/7.81.0\" \"-\"\n","stream":"stdout","time":"2024-11-01T20:30:52.213248083Z"}
+{"log":"2024/11/02 04:30:52 [error] 7#7: *3 open() \"/usr/share/nginx/html/aasasas\" failed (2: No such file or directory), client: 127.0.0.1, server: localhost, request: \"GET /aasasas HTTP/1.1\", host: \"127.0.0.1:8080\"\n","stream":"stderr","time":"2024-11-01T20:30:52.213248505Z"}

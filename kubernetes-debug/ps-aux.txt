@@ -1,0 +1,6 @@
+# ps -aux
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.1  10812  6156 ?        Ss   19:38   0:00 nginx: master process nginx -g daemon off;
+message+       7  0.0  0.0  11204  2520 ?        S    19:38   0:00 nginx: worker process
+root           8  0.0  0.0   2892   984 pts/0    Ss   19:38   0:00 sh
+root          17  0.0  0.0   7064  1604 pts/0    R+   19:39   0:00 ps -aux
