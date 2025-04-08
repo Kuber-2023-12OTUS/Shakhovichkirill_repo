@@ -21,37 +21,39 @@ ansible-playbook -bi k8s.ini kubeadm-play.yaml
 ```
 ansible-playbook -bi k8s.ini prepare-upgrade-play.yaml
 ```
-Далее на мастер ноде выполняем проверку плана обновления кластера и его обновление
+
+- Далее на мастер ноде выполняем проверку плана обновления кластера и его обновление
 ```
 kubeadm upgrade plan
 kubeadm upgrade apply v1.32.3
 ```
 
-Выводим мастер ноду из планирования ноду
+- Выводим мастер ноду из планирования ноду
 ```
 kubectl drain k8s-m-0 --ignore-daemonsets
 ```
 
-Далее обновляем kubelet, kubectl, kubeadm на мастер ноде
+- Далее обновляем kubelet, kubectl, kubeadm на мастер ноде
 ```
 apt-get update && sudo apt-get install -y kubelet='1.32.3-1.1' kubectl='1.32.3-1.1' 'kubeadm=1.32.3-1.1' && apt-mark hold kubelet kubectl kubeadm
 ```
 
-Перезапуск kubelet на мастер ноде
+- Перезапуск kubelet на мастер ноде
 ```
 systemctl daemon-reload && systemctl restart kubelet.service
 ```
 
-Возвращаем мастер ноду
+- Возвращаем мастер ноду
 ```
 kubectl uncordon k8s-m-0
 ```
-Затем обновляем локальную конфигурацию kubelet на воркер нодах
+
+- Затем обновляем локальную конфигурацию kubelet на воркер нодах
 ```
 kubeadm upgrade node
 ```
 
-Далее выполняем команды на каждой воркер ноде последовательно.
+- Далее выполняем команды на каждой воркер ноде последовательно.
 ```
 kubectl drain {{ worker }} --ignore-daemonsets #on master
 
