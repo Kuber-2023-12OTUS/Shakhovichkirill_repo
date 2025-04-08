@@ -1,0 +1,143 @@
+---
+# vim: syntax=yaml ts=2 sw=2 tw=512
+- hosts: all
+  vars:
+    k8s_actual: "1.32"
+    k8s_min: "1.31"
+    pod_cidr: "10.244.0.0/16"
+    service_cidr: "10.96.0.0/12"
+    flannel_backend: "vxlan"
+    control_plane_endpoint: "{{ hostvars[groups['masters'][0]].ansible_host }}:6443"
+  tasks:
+    - name: Init cluster
+      block:
+        - name: Init master
+          shell:
+            cmd: |
+              kubectl --kubeconfig /etc/kubernetes/admin.conf cluster-info || kubeadm init \
+                --pod-network-cidr={{ pod_cidr }} \
+                --service-cidr={{ service_cidr }} \
+                --control-plane-endpoint {{ control_plane_endpoint }} \
+                --kubernetes-version v1.31.0
+          
+        - name:  Get kubeconfig
+          ansible.builtin.shell:
+            cmd: |
+              mkdir -p /root/.kube
+              cp -i /etc/kubernetes/admin.conf /root/.kube/config
+              chown "$(id -u)":"$(id -g)" /root/.kube/config
+            creates: /root/.kube/config
+
+        - name: Get the token for joining the worker node
+          ansible.builtin.shell:
+            cmd: kubeadm token create --print-join-command
+          register: kubernetes_join_command
+        
+        - name: DEBUG join command
+          ansible.builtin.debug:
+            msg: "{{ kubernetes_join_command.stdout }}"
+        
+        - name: Copy join command to the variable
+          ansible.builtin.set_fact:
+            join_command: "{{ kubernetes_join_command.stdout_lines[0] }}"
+      when: inventory_hostname == groups['masters'][0]
+
+    - name: Install Flanel
+      block:
+        - name: Download Flannel manifest
+          get_url:
+            url: "https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml"
+            dest: "/tmp/kube-flannel.yml"
+            mode: '0644'
+
+        - name: Apply Flannel manifest
+          command: kubectl apply -f /tmp/kube-flannel.yml    
+
+        - name: Wait for Flannel pods to be ready
+          command: kubectl wait --for=condition=ready pods -l app=flannel -n kube-flannel --timeout=300s
+    
+        - name: Verify Flannel installation
+          command: kubectl get pods -n kube-flannel -l app=flannel
+          register: flannel_pods
+          changed_when: false
+    
+        - name: Show Flannel pods status
+          debug:
+            var: flannel_pods.stdout_lines
+      when: inventory_hostname in groups['masters'][0]
+
+    - name: Join worker nodes
+      block:
+        - name: Check kubelet healthz
+          ansible.builtin.shell:
+            cmd: curl http://localhost:10248/healthz || echo "not ok"
+          register: kubelet_healthz
+
+        - name: Debug kubelet healthz
+          ansible.builtin.debug:
+            msg: "{{ kubelet_healthz }}"
+        
+        - name: Kubelet healthz - set node status
+          ansible.builtin.set_fact:
+            do_init_node: "{{ not kubelet_healthz.stdout_lines[-1].lower().startswith('ok') }}"
+        
+        - name: Debug do_init_node
+          ansible.builtin.debug:
+            msg: "{{ do_init_node }}"
+        
+        - name: Copy join command from master to worker nodes
+          ansible.builtin.copy:
+            content: "{{ hostvars[item]['join_command'] }}"
+            dest: /tmp/kubernetes_join_command.sh
+          with_items: "{{ groups['masters'][0] }}"
+          when: do_init_node
+        
+        - name: Set join script permissions
+          ansible.builtin.file:
+            path: /tmp/kubernetes_join_command.sh
+            owner: root
+            group: root
+            mode: 0750
+          when: do_init_node
+        
+        - name: Join the Worker nodes to the cluster
+          ansible.builtin.shell: /tmp/kubernetes_join_command.sh
+          register: joined_or_not
+          when: do_init_node
+        
+        - name: Join the Worker nodes to the cluster - Print State
+          ansible.builtin.debug:
+            msg: "{{ joined_or_not.stdout }}"
+          when: do_init_node
+        
+        - name: Pause for 1 minutes to get time for workers to join the cluster
+          ansible.builtin.pause:
+            minutes: 1
+          when: do_init_node
+        
+        - name: Ensure folder for localpath
+          ansible.builtin.file:
+            path: /opt/localpath/
+            owner: root
+            group: root
+            mode: 0777
+            state: directory
+          when: do_init_node
+        
+        - name: Cleanup temp dir
+          ansible.builtin.file:
+            path: /tmp/kubernetes_join_command.sh
+            state: absent
+          when: do_init_node
+        
+        - name: Reboot all servers
+          ansible.builtin.reboot:
+            reboot_timeout: 3600
+          when: do_init_node
+        
+        - name: Wait for servers to start
+          ansible.builtin.wait_for_connection:
+            delay: 15
+            timeout: 300
+          when: do_init_node
+      when: inventory_hostname in groups['workers']

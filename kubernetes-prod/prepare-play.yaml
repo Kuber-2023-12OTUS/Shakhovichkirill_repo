@@ -1,0 +1,153 @@
+---
+# vim: syntax=yaml ts=2 sw=2 tw=512
+- hosts: all
+  vars:
+    k8s_actual: "1.32"
+    k8s_min: "1.31"
+  tasks:
+    - name: System common prepare
+      block:
+        - name: Load Kernel modules
+          ansible.builtin.shell:
+            cmd: "modprobe {{ item }}"
+          with_items:
+            - overlay
+            - br_netfilter
+    
+        - name: Persist Kernel modules
+          ansible.builtin.blockinfile:
+            block: "{{ item }}"
+            dest: "/etc/modules-load.d/{{ item }}.conf"
+            marker: "# {mark} ANSIBLE MANAGED BLOCK FOR KERNEL MODULES"
+            create: true
+          with_items:
+            - overlay
+            - br_netfilter
+    
+        - name: Add Sysctl Params
+          ansible.posix.sysctl:
+            name: "{{ item.key }}"
+            value: "{{ item.value }}"
+            sysctl_set: true
+            state: present
+            reload: true
+            sysctl_file: /etc/sysctl.d/k8s.conf
+          with_dict:
+            - net.bridge.bridge-nf-call-iptables: 1
+            - net.bridge.bridge-nf-call-ip6tables: 1
+            - net.ipv4.ip_forward: 1
+            - fs.inotify.max_user_instances: 524288
+            - net.ipv6.conf.all.disable_ipv6: 0
+            - net.ipv6.conf.default.disable_ipv6: 0
+            - net.ipv4.conf.all.proxy_arp: 1
+            - vm.max_map_count: 262144
+            - fs.aio-max-nr: 10485760
+    
+        - name: Install required packages
+          apt:
+            name: "{{ packages }}"
+            state: present
+            update_cache: yes
+          vars:
+            packages:
+              - apt-transport-https
+              - ca-certificates
+              - curl
+              - nfs-common
+              - gpg
+              - net-tools
+    
+        - name: Install RUNC and things
+          ansible.builtin.package:
+            name: "{{ item }}"
+            state: latest
+          with_items:
+            - runc
+            - curl
+            - jq
+            - open-iscsi
+            - nfs-common
+            - cryptsetup
+
+    - name: Kubernetes common prepare
+      block:
+        - name: Add Docker GPG key (Debian/Ubuntu)
+          apt_key:
+            url: "https://download.docker.com/linux/{{ (ansible_distribution | lower) }}/gpg"
+            state: present
+    
+        - name: Add Docker repository (Debian/Ubuntu)
+          apt_repository:
+            repo: "deb [arch=amd64] https://download.docker.com/linux/{{ (ansible_distribution | lower) }} {{ ansible_distribution_release }} stable"
+            state: present
+            update_cache: yes
+    
+        - name: Install containerd package
+          package:
+            name: "containerd.io"
+            state: present
+    
+        - name: Create containerd config directory
+          file:
+            path: /etc/containerd
+            state: directory
+            mode: 0755
+    
+        - name: Generate containerd config
+          command: containerd config default
+          register: containerd_default_config
+    
+        - name: Configure containerd (with systemd cgroup)
+          copy:
+            dest: /etc/containerd/config.toml
+            content: |
+              {{ containerd_default_config.stdout | regex_replace('SystemdCgroup = false', 'SystemdCgroup = true') }}
+    
+        - name: Configure containerd service
+          systemd:
+            name: containerd
+            state: started
+            enabled: yes
+            daemon_reload: yes
+   
+        - name: Add Kubernetes GPG key
+          apt_key:
+            url: "https://pkgs.k8s.io/core:/stable:/v{{ k8s_min }}/deb/Release.key"
+            state: present
+    
+        - name: Add Kubernetes repository
+          apt_repository:
+            repo: "deb https://pkgs.k8s.io/core:/stable:/v{{ k8s_min }}/deb/ /"
+            state: present
+            update_cache: yes
+    
+        - name: Install kubelet kubectl kubeadm 
+          apt:
+            name: "{{ item }}"
+            state: present
+            update_cache: true
+          loop:
+            - "kubelet=1.31.0-1.1"
+            - "kubectl=1.31.0-1.1"
+            - "kubeadm=1.31.0-1.1"
+        
+        - name: kubelet kubectl kubeadm  start
+          systemd:
+            name: "{{ item }}"
+            enabled: true
+            state: started
+            daemon_reload: true
+          loop:
+            - kubelet
+            - kubectl
+            - kubeadm
+
+        - name: Hold kubelet kubectl kubeadm 
+          ansible.builtin.dpkg_selections:
+            name: "{{ item }}"
+            selection: hold
+          with_items:
+            - kubelet
+            - kubectl
+            - kubeadm
+          

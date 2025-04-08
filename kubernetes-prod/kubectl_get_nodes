@@ -1,0 +1,39 @@
+NAME      STATUS   ROLES           AGE     VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION     CONTAINER-RUNTIME
+k8s-m-0   Ready    control-plane   4m2s    v1.32.2   10.130.0.28   <none>        Ubuntu 24.04.2 LTS   6.8.0-55-generic   containerd://2.0.3
+k8s-m-1   Ready    control-plane   3m41s   v1.32.2   10.130.0.26   <none>        Ubuntu 24.04.2 LTS   6.8.0-55-generic   containerd://2.0.3
+k8s-m-2   Ready    control-plane   3m37s   v1.32.2   10.130.0.35   <none>        Ubuntu 24.04.2 LTS   6.8.0-55-generic   containerd://2.0.3
+k8s-w-0   Ready    <none>          2m46s   v1.32.2   10.130.0.16   <none>        Ubuntu 24.04.2 LTS   6.8.0-55-generic   containerd://2.0.3
+k8s-w-1   Ready    <none>          2m46s   v1.32.2   10.130.0.15   <none>        Ubuntu 24.04.2 LTS   6.8.0-55-generic   containerd://2.0.3
+
+root@k8s-m-0:~# kubectl get po -A
+NAMESPACE     NAME                                       READY   STATUS    RESTARTS      AGE
+kube-system   calico-kube-controllers-6747688466-74x8x   1/1     Running   0             14m
+kube-system   calico-node-5f9zb                          1/1     Running   0             15m
+kube-system   calico-node-kz76l                          1/1     Running   0             15m
+kube-system   calico-node-lb6n7                          1/1     Running   0             15m
+kube-system   calico-node-pf4sh                          1/1     Running   0             15m
+kube-system   calico-node-xlfp4                          1/1     Running   0             15m
+kube-system   coredns-5c54f84c97-cgbbs                   1/1     Running   0             14m
+kube-system   coredns-5c54f84c97-pzx45                   1/1     Running   0             14m
+kube-system   dns-autoscaler-76ddddbbc-rjn5k             1/1     Running   0             14m
+kube-system   kube-apiserver-k8s-m-0                     1/1     Running   0             17m
+kube-system   kube-apiserver-k8s-m-1                     1/1     Running   0             17m
+kube-system   kube-apiserver-k8s-m-2                     1/1     Running   0             17m
+kube-system   kube-controller-manager-k8s-m-0            1/1     Running   1             17m
+kube-system   kube-controller-manager-k8s-m-1            1/1     Running   1             17m
+kube-system   kube-controller-manager-k8s-m-2            1/1     Running   1             17m
+kube-system   kube-proxy-887h5                           1/1     Running   0             16m
+kube-system   kube-proxy-mwmbv                           1/1     Running   0             16m
+kube-system   kube-proxy-rknds                           1/1     Running   0             16m
+kube-system   kube-proxy-wf8rc                           1/1     Running   0             16m
+kube-system   kube-proxy-z54qp                           1/1     Running   0             16m
+kube-system   kube-scheduler-k8s-m-0                     1/1     Running   2 (16m ago)   17m
+kube-system   kube-scheduler-k8s-m-1                     1/1     Running   1             17m
+kube-system   kube-scheduler-k8s-m-2                     1/1     Running   1             17m
+kube-system   nginx-proxy-k8s-w-0                        1/1     Running   0             16m
+kube-system   nginx-proxy-k8s-w-1                        1/1     Running   0             16m
+kube-system   nodelocaldns-2f5wk                         1/1     Running   0             14m
+kube-system   nodelocaldns-72kpf                         1/1     Running   0             14m
+kube-system   nodelocaldns-946gd                         1/1     Running   0             14m
+kube-system   nodelocaldns-fv6rp                         1/1     Running   0             14m
+kube-system   nodelocaldns-wfshl                         1/1     Running   0             14m
