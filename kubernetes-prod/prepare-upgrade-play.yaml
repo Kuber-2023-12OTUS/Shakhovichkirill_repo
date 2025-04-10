@@ -1,0 +1,28 @@
+---
+# vim: syntax=yaml ts=2 sw=2 tw=512
+- hosts: all
+  vars:
+    k8s_actual: "1.32"
+    k8s_min: "1.31"
+  tasks:
+    - name: Prepare to upgrade
+      block:
+        - name: Add Kubernetes GPG key
+          apt_key:
+            url: "https://pkgs.k8s.io/core:/stable:/v{{ k8s_actual }}/deb/Release.key"
+            state: present
+    
+        - name: Add Kubernetes repository
+          apt_repository:
+            repo: "deb https://pkgs.k8s.io/core:/stable:/v{{ k8s_actual }}/deb/ /"
+            state: present
+            update_cache: yes
+
+        - name: Unhold kubelet kubectl kubeadm 
+          ansible.builtin.dpkg_selections:
+            name: "{{ item }}"
+            selection: install
+          with_items:
+            - kubelet
+            - kubectl
+            - kubeadm

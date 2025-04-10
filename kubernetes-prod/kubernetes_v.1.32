@@ -1,0 +1,14 @@
+# Обновление master node
+NAME      STATUS   ROLES           AGE    VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION     CONTAINER-RUNTIME
+k8s-m-0   Ready    control-plane   105m   v1.32.3   10.130.0.15   <none>        Ubuntu 24.04.2 LTS   6.8.0-55-generic   containerd://1.7.27
+k8s-w-0   Ready    <none>          34m    v1.31.0   10.130.0.30   <none>        Ubuntu 24.04.2 LTS   6.8.0-57-generic   containerd://1.7.27
+k8s-w-1   Ready    <none>          34m    v1.31.0   10.130.0.7    <none>        Ubuntu 24.04.2 LTS   6.8.0-57-generic   containerd://1.7.27
+k8s-w-2   Ready    <none>          34m    v1.31.0   10.130.0.34   <none>        Ubuntu 24.04.2 LTS   6.8.0-55-generic   containerd://1.7.27
+
+# Обновление worker node
+root@k8s-m-0:/etc/apt# kubectl get nodes -owide
+NAME      STATUS   ROLES           AGE     VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION     CONTAINER-RUNTIME
+k8s-m-0   Ready    control-plane   3h12m   v1.32.3   10.130.0.15   <none>        Ubuntu 24.04.2 LTS   6.8.0-55-generic   containerd://1.7.27
+k8s-w-0   Ready    <none>          120m    v1.32.3   10.130.0.30   <none>        Ubuntu 24.04.2 LTS   6.8.0-57-generic   containerd://1.7.27
+k8s-w-1   Ready    <none>          120m    v1.32.3   10.130.0.7    <none>        Ubuntu 24.04.2 LTS   6.8.0-57-generic   containerd://1.7.27
+k8s-w-2   Ready    <none>          120m    v1.32.3   10.130.0.34   <none>        Ubuntu 24.04.2 LTS   6.8.0-55-generic   containerd://1.7.27
